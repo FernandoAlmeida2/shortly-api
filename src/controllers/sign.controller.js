@@ -1,19 +1,19 @@
 import { v4 as uuidv4 } from "uuid";
 import bcrypt from "bcrypt";
+import { connection } from "../database/database.js";
 
 export async function signUp(req, res) {
-  const user = req.body;
-  /* try {
-    delete user.repeat_password;
-    await usersCollection.insertOne({
-      ...user,
-      password: bcrypt.hashSync(user.password, 10),
-    });
+  const { name, password, email } = req.body;
+  try {
+    await connection.query(
+      "INSERT INTO users (name, email, password) VALUES ($1, $2, $3)",
+      [name, email, bcrypt.hashSync(password, 10)]
+    );
     res.status(201).send({ message: "registration done!" });
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
-  } */
+  }
 }
 
 export async function signIn(req, res) {
