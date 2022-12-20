@@ -26,7 +26,7 @@ export async function signInMiddleware(req, res, next) {
         userId: user.rows[0].id,
       }
     } else {
-      return res.status(404).send({ message: "email/password invalid!" });
+      return res.status(401).send({ message: "email/password invalid!" });
     }
   } catch (err) {
     console.log(err);
