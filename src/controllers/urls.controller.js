@@ -3,6 +3,7 @@ import { nanoid } from "nanoid";
 
 export async function postShorten(req, res) {
   const { url } = req.body;
+  const { userId } = req.session;
   let shortUrl;
   const shortUrlExists = await connection.query(
     "SELECT * FROM urls WHERE url = $1",
@@ -12,8 +13,8 @@ export async function postShorten(req, res) {
     if (!shortUrlExists.rows[0]) {
       shortUrl = nanoid();
       await connection.query(
-        'INSERT INTO urls (url, "shortUrl") VALUES ($1, $2)',
-        [url, shortUrl]
+        'INSERT INTO urls ("userId", url, "shortUrl") VALUES ($1, $2, $3)',
+        [userId, url, shortUrl]
       );
     } else {
       shortUrl = shortUrlExists.rows[0].shortUrl;
@@ -30,7 +31,7 @@ export async function getUrl(req, res) {
   try {
     const url = await connection.query("SELECT * FROM urls WHERE id = $1", [id]);
     if (!url.rows[0]) {
-      res.status(404).send("The url doesn't exists!");
+      res.status(404).send({ message: "The url doesn't exists!" });
       return;
     }
     res.status(200).send(url.rows[0]);
@@ -38,4 +39,21 @@ export async function getUrl(req, res) {
     console.log(err);
     res.sendStatus(500);
   }
+}
+
+export async function getOpenUrl(req, res) {
+  const { shortUrl } = req.params;
+  const urlExists = await connection.query(
+    'SELECT * FROM urls WHERE "shortUrl" = $1',
+    [shortUrl]
+  );
+  if (!urlExists.rows[0]) {
+    res.status(404).send({message: "The url doesn't exists!"});
+    return;
+  }
+  await connection.query('UPDATE urls SET "visitCount" = $1 WHERE id = $2', [
+    urlExists.rows[0].visitCount + 1,
+    urlExists.rows[0].id,
+  ]);
+  res.redirect(urlExists.rows[0].url);
 }

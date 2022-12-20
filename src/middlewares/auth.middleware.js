@@ -16,7 +16,7 @@ export async function authMiddleware(req, res, next) {
       res.status(401).send({ message: "Invalid token!" });
       return;
     }
-    req.session = session.rows[0];;
+    req.session = session.rows[0];
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
