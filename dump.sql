@@ -21,3 +21,9 @@ CREATE TABLE visitors (
     "urlId" INTEGER NOT NULL REFERENCES "urls"("id"),
     "createdAt" DATE DEFAULT NOW()
 );
+
+CREATE TABLE sessions (
+    id SERIAL PRIMARY KEY,
+    "userId" INTEGER NOT NULL REFERENCES "users"("id"),
+    token TEXT NOT NULL
+);

@@ -3,7 +3,7 @@ import cors from "cors";
 import signRouter from "./routes/sign.routes.js";
 
 const server = express();
-server.use(cors);
+server.use(cors());
 server.use(express.json());
 server.use(signRouter);
 
