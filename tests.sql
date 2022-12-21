@@ -24,8 +24,23 @@ CREATE TABLE sessions (
 );
 
 /* CREATE TABLE visitors (
-    id SERIAL PRIMARY KEY,
-    "userId" INTEGER NOT NULL REFERENCES "users"("id"),
-    "urlId" INTEGER NOT NULL REFERENCES "urls"("id"),
-    "createdAt" DATE DEFAULT NOW()
-); */
+ id SERIAL PRIMARY KEY,
+ "userId" INTEGER NOT NULL REFERENCES "users"("id"),
+ "urlId" INTEGER NOT NULL REFERENCES "urls"("id"),
+ "createdAt" DATE DEFAULT NOW()
+ ); */
+SELECT
+    users.id,
+    users.name,
+    COUNT(urls.id)
+FROM
+    users
+    JOIN urls ON users.id = urls."userId"
+WHERE
+    urls."userId" = $ 1
+GROUP BY
+    users.id;
+
+SELECT id, "shortUrl", url, "visitCount" FROM urls WHERE "userId" = $1;
+
+

@@ -8,10 +8,8 @@ const router = Router();
 router.get('/urls/:id', getUrl);
 router.get('/urls/open/:shortUrl', getOpenUrl);
 
-router.use(authMiddleware);
+router.post('/urls/shorten', authMiddleware, shortenMiddleware, postShorten);
 
-router.post('/urls/shorten', shortenMiddleware, postShorten);
-
-router.delete('/urls/:id', deleteUrl);
+router.delete('/urls/:id', authMiddleware, deleteUrl);
 
 export default router;

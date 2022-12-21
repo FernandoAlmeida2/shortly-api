@@ -17,6 +17,10 @@ export async function getMyUrls(req, res) {
             users.id`,
       [userId]
     );
+    if (!userData.rows[0]){
+        res.status(404).send({ message: "The user doesn't exist!" });
+        return;
+      }
     const urlsData = await connection.query(
       'SELECT id, "shortUrl", url, "visitCount" FROM urls WHERE "userId" = $1',
       [userId]
