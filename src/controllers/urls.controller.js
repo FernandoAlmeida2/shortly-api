@@ -48,7 +48,7 @@ export async function getOpenUrl(req, res) {
     [shortUrl]
   );
   if (!urlExists.rows[0]) {
-    res.status(404).send({message: "The url doesn't exists!"});
+    res.status(404).send({ message: "The url doesn't exists!" });
     return;
   }
   await connection.query('UPDATE urls SET "visitCount" = $1 WHERE id = $2', [
@@ -56,4 +56,26 @@ export async function getOpenUrl(req, res) {
     urlExists.rows[0].id,
   ]);
   res.redirect(urlExists.rows[0].url);
+}
+
+export async function deleteUrl(req, res) {
+  const { id } = req.params;
+  const { userId } = req.session;
+  const shortUrlExists = await connection.query("SELECT * FROM urls WHERE id = $1", [id]);
+  try {
+    if (!shortUrlExists.rows[0]) {
+      res.status(404).send({ message: "The url doesn't exists!" });
+      return;
+    }
+    const shortUrlRow = shortUrlExists.rows[0];
+    if (shortUrlRow.userId !== userId){
+      res.status(401).send({ message: "The url does not belong to the given user!" });
+      return;
+    }
+    await connection.query('DELETE FROM urls WHERE id = $1', [id]);
+    res.status(204).send({ message: "The url was deleted!" });
+  } catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 }
