@@ -41,6 +41,16 @@ WHERE
 GROUP BY
     users.id;
 
-SELECT id, "shortUrl", url, "visitCount" FROM urls WHERE "userId" = $1;
+SELECT id, "shortUrl", url, "visitCount"
+FROM urls
+WHERE
+    "userId" = $ 1;
 
-
+SELECT
+    users.id,
+    users.name,
+    COUNT(DISTINCT urls.id) AS "linksCount",
+    SUM(urls."visitCount") AS "visitCount"
+FROM users JOIN urls ON users.id = urls."userId"
+GROUP BY users.id
+ORDER BY "visitCount" DESC LIMIT 10;

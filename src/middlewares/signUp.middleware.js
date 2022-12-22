@@ -1,5 +1,5 @@
 import { userSchema } from "../models/user.models.js";
-import { connection } from "../database/database.js";
+import { getUser } from "../repositories/users.repository.js";
 
 export async function signUpMiddleware(req, res, next) {
   const user = req.body;
@@ -10,10 +10,7 @@ export async function signUpMiddleware(req, res, next) {
     return;
   }
   try {
-    const userExists = await connection.query(
-      "SELECT * FROM users WHERE email = $1",
-      [user.email]
-    );
+    const userExists = await getUser(user.email);
     if (userExists.rows.length === 1) {
       res.status(409).send({ message: "This user already exists!" });
       return;

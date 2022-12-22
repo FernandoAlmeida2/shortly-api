@@ -1,7 +1,8 @@
 import { loginSchema } from "../models/user.models.js";
-import { connection } from "../database/database.js";
 import bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
+import { getUser } from "../repositories/users.repository.js";
+import { getSession } from "../repositories/sessions.repository.js";
 
 export async function signInMiddleware(req, res, next) {
   const { email, password } = req.body;
@@ -13,9 +14,9 @@ export async function signInMiddleware(req, res, next) {
   }
   try {
     let token;
-    const user = await connection.query('SELECT * FROM users WHERE email = $1', [email]);
+    const user = await getUser(email);
     if (user.rows[0] && bcrypt.compareSync(password, user.rows[0].password)) {
-      const sessionExists = await connection.query('SELECT * FROM sessions WHERE "userId" = $1', [user.rows[0].userId]);
+      const sessionExists = await getSession(user.rows[0].userId);
       if (!sessionExists.rows[0]) {
         token = uuidv4();
       } else {

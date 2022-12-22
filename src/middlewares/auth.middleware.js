@@ -1,17 +1,14 @@
-import { connection } from "../database/database.js";
+import { getSessionByToken } from "../repositories/sessions.repository.js";
 
 export async function authMiddleware(req, res, next) {
   const { authorization } = req.headers;
   const token = authorization?.replace("Bearer ", "");
   if (!token) {
-    res.status(401).send({ message: "invalid format!" });
+    res.status(401).send({ message: "invalid header format!" });
     return;
   }
   try {
-    const session = await connection.query(
-      "SELECT * FROM sessions WHERE token = $1",
-      [token]
-    );
+    const session = await getSessionByToken(token);
     if (!session.rows[0]) {
       res.status(401).send({ message: "Invalid token!" });
       return;
