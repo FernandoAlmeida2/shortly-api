@@ -50,7 +50,7 @@ export async function getOpenUrl(req, res) {
       return;
     }
     await updateUrlVisits(urlExists.rows[0].visitCount,urlExists.rows[0].id);
-    res.status(200).redirect(urlExists.rows[0].url);
+    res.redirect(urlExists.rows[0].url);
   } catch (err) {
     console.log(err);
     res.sendStatus(500);
